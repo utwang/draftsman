@@ -82,6 +82,10 @@ module Draftsman
 
       changes.clone.each do |key, change|
         type = type_for_attribute(key)
+
+        if type.is_a?(ActiveRecord::Enum::EnumType)
+          change = change.map { |c| self.send(key.pluralize).fetch(c) }
+        end
         changes[key] = Array(change).map { |value| type.send(serializer, value) }
       end
     end
